@@ -22,7 +22,7 @@ public class AnnouncementManager {
     private int intervalSeconds;
     private boolean randomOrder;
     private List<Component> intervalMessages;
-    
+
     private boolean scheduledEnabled;
     private Map<String, Component> scheduledMessages;
 
@@ -44,7 +44,7 @@ public class AnnouncementManager {
         this.intervalSeconds = config.getInt("interval_messages.interval_seconds", 300);
         this.randomOrder = config.getBoolean("interval_messages.random_order", false);
         this.rawIntervalMessages = config.getStringList("interval_messages.messages");
-        
+
         this.intervalMessages = new ArrayList<>();
         for (String msg : this.rawIntervalMessages) {
             this.intervalMessages.add(parseMessage(msg));
@@ -70,7 +70,7 @@ public class AnnouncementManager {
         // MiniMessage is default
         return miniMessage.deserialize(text);
     }
-    
+
     public void addIntervalMessage(String rawMessage) {
         this.rawIntervalMessages.add(rawMessage);
         this.intervalMessages.add(parseMessage(rawMessage));
