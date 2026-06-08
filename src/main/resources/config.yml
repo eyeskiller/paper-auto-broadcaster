@@ -1,0 +1,23 @@
+# AutoBroadcaster Configuration
+
+# The prefix for all plugin messages
+prefix: "<gray>[<gradient:#ff0000:#ff7f00>AutoBroadcaster</gradient>] <reset>"
+
+# Messages that are broadcasted at a specific interval.
+# interval_seconds: How often in seconds the messages should be broadcasted.
+# random_order: If true, picks a random message. If false, goes in order.
+interval_messages:
+  enabled: true
+  interval_seconds: 300
+  random_order: false
+  messages:
+    - "<green>Welcome to our server!</green> Remember to read the rules."
+    - "Join our discord at <aqua><click:open_url:'https://discord.gg/example'>discord.gg/example</click></aqua>"
+
+# Messages that are broadcasted at specific server times (HH:MM).
+# Make sure the time matches the server's time zone.
+scheduled_messages:
+  enabled: true
+  messages:
+    "12:00": "<gold>It is noon! Don't forget to grab your daily rewards!</gold>"
+    "20:00": "<light_purple>Evening event is starting now!</light_purple>"

@@ -1,0 +1,17 @@
+name: AutoBroadcaster
+version: '${version}'
+main: com.eyeskiller.autobroadcaster.AutoBroadcaster
+api-version: '1.21'
+prefix: Broadcaster
+authors: [Eyeskiller]
+description: A plugin to automate server announcements based on time and intervals.
+commands:
+  autobroadcaster:
+    description: Main command for AutoBroadcaster.
+    usage: /autobroadcaster <reload|add|remove|list>
+    aliases: [abroadcaster, ab]
+    permission: autobroadcaster.admin
+permissions:
+  autobroadcaster.admin:
+    description: Allows managing the AutoBroadcaster plugin.
+    default: op
