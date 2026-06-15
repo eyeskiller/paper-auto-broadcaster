@@ -4,6 +4,7 @@ import com.eyeskiller.autobroadcaster.command.AutoBroadcasterCommand;
 import com.eyeskiller.autobroadcaster.manager.AnnouncementManager;
 import com.eyeskiller.autobroadcaster.task.IntervalTask;
 import com.eyeskiller.autobroadcaster.task.ScheduledTimeTask;
+import online.bechatbot.analytics.AnalyticsTracker;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class AutoBroadcaster extends JavaPlugin {
@@ -24,7 +25,7 @@ public class AutoBroadcaster extends JavaPlugin {
 
         startTasks();
         
-        online.bechatbot.analytics.AnalyticsTracker analytics = new online.bechatbot.analytics.AnalyticsTracker(this, "https://analytics.bechatbot.online/api/track");
+        AnalyticsTracker analytics = new AnalyticsTracker(this, "https://analytics.bechatbot.online/api/track");
         analytics.sendEvent("STARTUP");
         
         getLogger().info("AutoBroadcaster enabled successfully!");
