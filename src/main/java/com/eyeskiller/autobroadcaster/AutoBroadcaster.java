@@ -24,6 +24,9 @@ public class AutoBroadcaster extends JavaPlugin {
 
         startTasks();
         
+        online.bechatbot.analytics.AnalyticsTracker analytics = new online.bechatbot.analytics.AnalyticsTracker(this, "https://analytics.bechatbot.online/api/track");
+        analytics.sendEvent("STARTUP");
+        
         getLogger().info("AutoBroadcaster enabled successfully!");
     }
 

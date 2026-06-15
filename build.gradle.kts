@@ -1,9 +1,10 @@
 plugins {
     java
+    id("com.gradleup.shadow") version "8.3.5"
 }
 
 group = "com.eyeskiller.autobroadcaster"
-version = "1.0-SNAPSHOT"
+version = "1.1.0"
 
 repositories {
     mavenCentral()
@@ -13,10 +14,18 @@ repositories {
     maven("https://oss.sonatype.org/content/groups/public/") {
         name = "sonatype"
     }
+    maven("https://jitpack.io") {
+        name = "jitpack"
+    }
 }
 
 dependencies {
     compileOnly("io.papermc.paper:paper-api:26.1.2.build.69-stable")
+    implementation("com.github.eyeskiller:plugin-analytics-api:v1.1.1")
+}
+
+tasks.build {
+    dependsOn("shadowJar")
 }
 
 val targetJavaVersion = 25
