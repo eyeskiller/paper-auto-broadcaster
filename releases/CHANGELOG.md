@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.2.0] - 2026-06-18
+
+### Changed
+- Updated Paper API and plugin configuration for Minecraft 26.2 compatibility.
+
 ## [1.1.0] - 2026-06-15
 
 ### Added

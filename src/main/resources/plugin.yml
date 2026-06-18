@@ -1,7 +1,7 @@
 name: AutoBroadcaster
 version: '${version}'
 main: com.eyeskiller.autobroadcaster.AutoBroadcaster
-api-version: '1.21'
+api-version: '26.2'
 prefix: Broadcaster
 authors: [Eyeskiller]
 description: A plugin to automate server announcements based on time and intervals.

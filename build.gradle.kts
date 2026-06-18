@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "com.eyeskiller.autobroadcaster"
-version = "1.1.0"
+version = "1.2.0"
 
 repositories {
     mavenCentral()
@@ -20,7 +20,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly("io.papermc.paper:paper-api:26.1.2.build.69-stable")
+    compileOnly("io.papermc.paper:paper-api:26.2.build.22-alpha")
     implementation("com.github.eyeskiller:plugin-analytics-api:v1.1.1")
 }
 
