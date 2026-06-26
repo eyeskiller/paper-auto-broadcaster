@@ -1,10 +1,5 @@
 # AutoBroadcaster Configuration
 
-# Analytics tracking. Set enabled to false to opt out.
-analytics:
-  enabled: true
-  url: "https://analytics.bechatbot.online/api/track"
-
 # The prefix for all plugin messages
 prefix: "<gray>[<gradient:#ff0000:#ff7f00>AutoBroadcaster</gradient>] <reset>"
 

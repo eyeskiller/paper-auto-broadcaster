@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "com.eyeskiller.autobroadcaster"
-version = "1.2.1"
+version = "1.3.0"
 
 repositories {
     mavenCentral()
@@ -14,14 +14,10 @@ repositories {
     maven("https://oss.sonatype.org/content/groups/public/") {
         name = "sonatype"
     }
-    maven("https://jitpack.io") {
-        name = "jitpack"
-    }
 }
 
 dependencies {
     compileOnly("io.papermc.paper:paper-api:26.2.build.22-alpha")
-    implementation("com.github.eyeskiller:plugin-analytics-api:v1.1.1")
     testImplementation("io.papermc.paper:paper-api:26.2.build.22-alpha")
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.2")
     testImplementation("org.junit.jupiter:junit-jupiter-engine:5.10.2")
