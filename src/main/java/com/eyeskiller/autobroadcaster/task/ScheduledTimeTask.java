@@ -9,6 +9,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
+import java.util.logging.Level;
 
 public class ScheduledTimeTask extends BukkitRunnable {
 
@@ -23,17 +24,21 @@ public class ScheduledTimeTask extends BukkitRunnable {
 
     @Override
     public void run() {
-        Map<String, Component> messages = manager.getScheduledMessages();
-        if (messages.isEmpty()) {
-            return;
-        }
+        try {
+            Map<String, Component> messages = manager.getScheduledMessages();
+            if (messages.isEmpty()) {
+                return;
+            }
 
-        String currentTime = LocalTime.now().format(timeFormatter);
+            String currentTime = LocalTime.now().format(timeFormatter);
 
-        if (messages.containsKey(currentTime)) {
-            Component message = messages.get(currentTime);
-            Component fullMessage = manager.getPrefix().append(message);
-            Bukkit.getServer().sendMessage(fullMessage);
+            if (messages.containsKey(currentTime)) {
+                Component message = messages.get(currentTime);
+                Component fullMessage = manager.getPrefix().append(message);
+                Bukkit.getServer().sendMessage(fullMessage);
+            }
+        } catch (Exception e) {
+            plugin.getLogger().log(Level.SEVERE, "Error broadcasting scheduled message", e);
         }
     }
 }
