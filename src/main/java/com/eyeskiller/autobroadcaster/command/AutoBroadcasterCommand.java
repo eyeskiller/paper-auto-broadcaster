@@ -42,7 +42,7 @@ public class AutoBroadcasterCommand implements CommandExecutor, TabCompleter {
         switch (subCommand) {
             case "reload":
                 plugin.reloadPlugin();
-                sender.sendMessage(Component.text("AutoBroadcaster configuration reloaded!", NamedTextColor.GREEN));
+                sendSuccess(sender, "AutoBroadcaster configuration reloaded!");
                 break;
             case "list":
                 sender.sendMessage(Component.text("--- Interval Messages ---", NamedTextColor.GOLD));
@@ -60,7 +60,7 @@ public class AutoBroadcasterCommand implements CommandExecutor, TabCompleter {
                 break;
             case "add":
                 if (args.length < 3) {
-                    sender.sendMessage(Component.text("Usage: /ab add <interval|time(HH:mm)> <message...>", NamedTextColor.RED));
+                    sendError(sender, "Usage: /ab add <interval|time(HH:mm)> <message...>");
                     return true;
                 }
                 String type = args[1];
@@ -68,19 +68,17 @@ public class AutoBroadcasterCommand implements CommandExecutor, TabCompleter {
                 
                 if (type.equalsIgnoreCase("interval")) {
                     manager.addIntervalMessage(message);
-                    plugin.restartTasks();
-                    sender.sendMessage(Component.text("Added interval message.", NamedTextColor.GREEN));
+                    restartAndConfirm(sender, "Added interval message.");
                 } else if (type.matches("^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$")) {
                     manager.addScheduledMessage(type, message);
-                    plugin.restartTasks();
-                    sender.sendMessage(Component.text("Added scheduled message for " + type + ".", NamedTextColor.GREEN));
+                    restartAndConfirm(sender, "Added scheduled message for " + type + ".");
                 } else {
-                    sender.sendMessage(Component.text("Invalid type! Use 'interval' or a valid time like '14:30'.", NamedTextColor.RED));
+                    sendError(sender, "Invalid type! Use 'interval' or a valid time like '14:30'.");
                 }
                 break;
             case "remove":
                 if (args.length < 3) {
-                    sender.sendMessage(Component.text("Usage: /ab remove <interval|time> <index|HH:mm>", NamedTextColor.RED));
+                    sendError(sender, "Usage: /ab remove <interval|time> <index|HH:mm>");
                     return true;
                 }
                 String removeType = args[1];
@@ -90,25 +88,23 @@ public class AutoBroadcasterCommand implements CommandExecutor, TabCompleter {
                     try {
                         int index = Integer.parseInt(id);
                         if (manager.removeIntervalMessage(index)) {
-                            plugin.restartTasks();
-                            sender.sendMessage(Component.text("Removed interval message at index " + index + ".", NamedTextColor.GREEN));
+                            restartAndConfirm(sender, "Removed interval message at index " + index + ".");
                         } else {
-                            sender.sendMessage(Component.text("Invalid index.", NamedTextColor.RED));
+                            sendError(sender, "Invalid index.");
                         }
                     } catch (NumberFormatException e) {
-                        sender.sendMessage(Component.text("Index must be a number.", NamedTextColor.RED));
+                        sendError(sender, "Index must be a number.");
                     }
                 } else if (removeType.equalsIgnoreCase("time")) {
                     if (!id.matches("^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$")) {
-                        sender.sendMessage(Component.text("Invalid time format! Use HH:mm (e.g. 14:30).", NamedTextColor.RED));
+                        sendError(sender, "Invalid time format! Use HH:mm (e.g. 14:30).");
                     } else if (manager.removeScheduledMessage(id)) {
-                        plugin.restartTasks();
-                        sender.sendMessage(Component.text("Removed scheduled message for " + id + ".", NamedTextColor.GREEN));
+                        restartAndConfirm(sender, "Removed scheduled message for " + id + ".");
                     } else {
-                        sender.sendMessage(Component.text("No scheduled message found for " + id + ".", NamedTextColor.RED));
+                        sendError(sender, "No scheduled message found for " + id + ".");
                     }
                 } else {
-                    sender.sendMessage(Component.text("Invalid type! Use 'interval' or 'time'.", NamedTextColor.RED));
+                    sendError(sender, "Invalid type! Use 'interval' or 'time'.");
                 }
                 break;
             default:
@@ -117,6 +113,19 @@ public class AutoBroadcasterCommand implements CommandExecutor, TabCompleter {
         }
 
         return true;
+    }
+
+    private void sendSuccess(CommandSender sender, String message) {
+        sender.sendMessage(Component.text(message, NamedTextColor.GREEN));
+    }
+
+    private void sendError(CommandSender sender, String message) {
+        sender.sendMessage(Component.text(message, NamedTextColor.RED));
+    }
+
+    private void restartAndConfirm(CommandSender sender, String message) {
+        plugin.restartTasks();
+        sendSuccess(sender, message);
     }
 
     private void sendHelp(CommandSender sender) {

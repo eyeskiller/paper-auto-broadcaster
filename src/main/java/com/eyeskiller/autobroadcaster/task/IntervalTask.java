@@ -3,7 +3,6 @@ package com.eyeskiller.autobroadcaster.task;
 import com.eyeskiller.autobroadcaster.AutoBroadcaster;
 import com.eyeskiller.autobroadcaster.manager.AnnouncementManager;
 import net.kyori.adventure.text.Component;
-import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.List;
@@ -41,8 +40,7 @@ public class IntervalTask extends BukkitRunnable {
                 currentIndex++;
             }
 
-            Component fullMessage = manager.getPrefix().append(message);
-            Bukkit.getServer().sendMessage(fullMessage);
+            manager.broadcastMessage(message);
         } catch (Exception e) {
             plugin.getLogger().log(Level.SEVERE, "Error broadcasting interval message", e);
         }
