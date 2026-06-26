@@ -4,6 +4,7 @@ import com.eyeskiller.autobroadcaster.AutoBroadcaster;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 
@@ -87,27 +88,22 @@ public class AnnouncementManager {
         return miniMessage.deserialize(text);
     }
 
+    public void broadcastMessage(Component message) {
+        Component fullMessage = prefix.append(message);
+        Bukkit.getServer().sendMessage(fullMessage);
+    }
+
     public void addIntervalMessage(String rawMessage) {
         this.rawIntervalMessages.add(rawMessage);
         this.intervalMessages.add(parseMessage(rawMessage));
-        plugin.getConfig().set("interval_messages.messages", this.rawIntervalMessages);
-        try {
-            plugin.saveConfig();
-        } catch (Exception e) {
-            plugin.getLogger().log(Level.SEVERE, "Failed to save config after adding interval message", e);
-        }
+        saveConfigValue("interval_messages.messages", this.rawIntervalMessages);
     }
 
     public boolean removeIntervalMessage(int index) {
         if (index >= 0 && index < rawIntervalMessages.size()) {
             this.rawIntervalMessages.remove(index);
             this.intervalMessages.remove(index);
-            plugin.getConfig().set("interval_messages.messages", this.rawIntervalMessages);
-            try {
-                plugin.saveConfig();
-            } catch (Exception e) {
-                plugin.getLogger().log(Level.SEVERE, "Failed to save config after removing interval message", e);
-            }
+            saveConfigValue("interval_messages.messages", this.rawIntervalMessages);
             return true;
         }
         return false;
@@ -115,26 +111,25 @@ public class AnnouncementManager {
 
     public void addScheduledMessage(String time, String rawMessage) {
         this.scheduledMessages.put(time, parseMessage(rawMessage));
-        plugin.getConfig().set("scheduled_messages.messages." + time, rawMessage);
-        try {
-            plugin.saveConfig();
-        } catch (Exception e) {
-            plugin.getLogger().log(Level.SEVERE, "Failed to save config after adding scheduled message", e);
-        }
+        saveConfigValue("scheduled_messages.messages." + time, rawMessage);
     }
 
     public boolean removeScheduledMessage(String time) {
         if (this.scheduledMessages.containsKey(time)) {
             this.scheduledMessages.remove(time);
-            plugin.getConfig().set("scheduled_messages.messages." + time, null);
-            try {
-                plugin.saveConfig();
-            } catch (Exception e) {
-                plugin.getLogger().log(Level.SEVERE, "Failed to save config after removing scheduled message", e);
-            }
+            saveConfigValue("scheduled_messages.messages." + time, null);
             return true;
         }
         return false;
+    }
+
+    private void saveConfigValue(String path, Object value) {
+        plugin.getConfig().set(path, value);
+        try {
+            plugin.saveConfig();
+        } catch (Exception e) {
+            plugin.getLogger().log(Level.SEVERE, "Failed to save config after updating: " + path, e);
+        }
     }
 
     public Component getPrefix() {

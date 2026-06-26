@@ -3,12 +3,10 @@ package com.eyeskiller.autobroadcaster.task;
 import com.eyeskiller.autobroadcaster.AutoBroadcaster;
 import com.eyeskiller.autobroadcaster.manager.AnnouncementManager;
 import net.kyori.adventure.text.Component;
-import org.bukkit.Server;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalTime;
@@ -28,9 +26,6 @@ class ScheduledTimeTaskTest {
     @Mock
     private AnnouncementManager manager;
 
-    @Mock
-    private Server server;
-
     private ScheduledTimeTask task;
 
     @BeforeEach
@@ -42,30 +37,23 @@ class ScheduledTimeTaskTest {
     void run_emptyMessages_doesNotBroadcast() {
         when(manager.getScheduledMessages()).thenReturn(Collections.emptyMap());
 
-        try (MockedStatic<org.bukkit.Bukkit> bukkit = mockStatic(org.bukkit.Bukkit.class)) {
-            task.run();
-            bukkit.verify(() -> org.bukkit.Bukkit.getServer(), never());
-        }
+        task.run();
+
+        verify(manager, never()).broadcastMessage(any());
     }
 
     @Test
     void run_matchingTime_broadcastsMessage() {
         String currentTime = LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm"));
         Component msg = Component.text("Scheduled message");
-        Component prefix = Component.text("PREFIX: ");
         Map<String, Component> messages = new HashMap<>();
         messages.put(currentTime, msg);
 
         when(manager.getScheduledMessages()).thenReturn(messages);
-        when(manager.getPrefix()).thenReturn(prefix);
 
-        try (MockedStatic<org.bukkit.Bukkit> bukkit = mockStatic(org.bukkit.Bukkit.class)) {
-            bukkit.when(() -> org.bukkit.Bukkit.getServer()).thenReturn(server);
+        task.run();
 
-            task.run();
-
-            verify(server).sendMessage(prefix.append(msg));
-        }
+        verify(manager).broadcastMessage(msg);
     }
 
     @Test
@@ -75,10 +63,9 @@ class ScheduledTimeTaskTest {
 
         when(manager.getScheduledMessages()).thenReturn(messages);
 
-        try (MockedStatic<org.bukkit.Bukkit> bukkit = mockStatic(org.bukkit.Bukkit.class)) {
-            task.run();
-            bukkit.verify(() -> org.bukkit.Bukkit.getServer(), never());
-        }
+        task.run();
+
+        verify(manager, never()).broadcastMessage(any());
     }
 
     @Test
@@ -86,20 +73,15 @@ class ScheduledTimeTaskTest {
         String currentTime = LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm"));
         Component matchMsg = Component.text("Match");
         Component noMatchMsg = Component.text("No match");
-        Component prefix = Component.text("");
         Map<String, Component> messages = new HashMap<>();
         messages.put(currentTime, matchMsg);
         messages.put("99:99", noMatchMsg);
 
         when(manager.getScheduledMessages()).thenReturn(messages);
-        when(manager.getPrefix()).thenReturn(prefix);
 
-        try (MockedStatic<org.bukkit.Bukkit> bukkit = mockStatic(org.bukkit.Bukkit.class)) {
-            bukkit.when(() -> org.bukkit.Bukkit.getServer()).thenReturn(server);
+        task.run();
 
-            task.run();
-
-            verify(server, times(1)).sendMessage(any(Component.class));
-        }
+        verify(manager).broadcastMessage(matchMsg);
+        verify(manager, never()).broadcastMessage(noMatchMsg);
     }
 }

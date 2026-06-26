@@ -177,9 +177,9 @@ class AutoBroadcasterCommandTest {
     @Test
     void onCommand_removeTime_nonExisting_sendsError() {
         when(sender.hasPermission("autobroadcaster.admin")).thenReturn(true);
-        when(manager.removeScheduledMessage("99:99")).thenReturn(false);
+        when(manager.removeScheduledMessage("23:59")).thenReturn(false);
 
-        boolean result = cmd.onCommand(sender, command, "ab", new String[]{"remove", "time", "99:99"});
+        boolean result = cmd.onCommand(sender, command, "ab", new String[]{"remove", "time", "23:59"});
 
         assertTrue(result);
         verify(plugin, never()).restartTasks();

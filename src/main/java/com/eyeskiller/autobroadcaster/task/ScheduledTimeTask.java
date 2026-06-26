@@ -3,7 +3,6 @@ package com.eyeskiller.autobroadcaster.task;
 import com.eyeskiller.autobroadcaster.AutoBroadcaster;
 import com.eyeskiller.autobroadcaster.manager.AnnouncementManager;
 import net.kyori.adventure.text.Component;
-import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.time.LocalTime;
@@ -33,9 +32,7 @@ public class ScheduledTimeTask extends BukkitRunnable {
             String currentTime = LocalTime.now().format(timeFormatter);
 
             if (messages.containsKey(currentTime)) {
-                Component message = messages.get(currentTime);
-                Component fullMessage = manager.getPrefix().append(message);
-                Bukkit.getServer().sendMessage(fullMessage);
+                manager.broadcastMessage(messages.get(currentTime));
             }
         } catch (Exception e) {
             plugin.getLogger().log(Level.SEVERE, "Error broadcasting scheduled message", e);
