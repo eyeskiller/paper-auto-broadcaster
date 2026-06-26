@@ -5,7 +5,10 @@ import com.eyeskiller.autobroadcaster.manager.AnnouncementManager;
 import com.eyeskiller.autobroadcaster.task.IntervalTask;
 import com.eyeskiller.autobroadcaster.task.ScheduledTimeTask;
 import online.bechatbot.analytics.AnalyticsTracker;
+import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.util.logging.Level;
 
 public class AutoBroadcaster extends JavaPlugin {
 
@@ -20,13 +23,23 @@ public class AutoBroadcaster extends JavaPlugin {
         this.announcementManager = new AnnouncementManager(this);
         this.announcementManager.loadConfig();
 
-        getCommand("autobroadcaster").setExecutor(new AutoBroadcasterCommand(this));
-        getCommand("autobroadcaster").setTabCompleter(new AutoBroadcasterCommand(this));
+        PluginCommand cmd = getCommand("autobroadcaster");
+        if (cmd != null) {
+            AutoBroadcasterCommand commandHandler = new AutoBroadcasterCommand(this);
+            cmd.setExecutor(commandHandler);
+            cmd.setTabCompleter(commandHandler);
+        } else {
+            getLogger().severe("Command 'autobroadcaster' not found in plugin.yml — commands will not work");
+        }
 
         startTasks();
-        
-        AnalyticsTracker analytics = new AnalyticsTracker(this, "https://analytics.bechatbot.online/api/track");
-        analytics.sendEvent("STARTUP");
+
+        try {
+            AnalyticsTracker analytics = new AnalyticsTracker(this, "https://analytics.bechatbot.online/api/track");
+            analytics.sendEvent("STARTUP");
+        } catch (Exception e) {
+            getLogger().log(Level.WARNING, "Failed to send analytics event", e);
+        }
         
         getLogger().info("AutoBroadcaster enabled successfully!");
     }
@@ -39,7 +52,11 @@ public class AutoBroadcaster extends JavaPlugin {
 
     public void reloadPlugin() {
         reloadConfig();
-        this.announcementManager.loadConfig();
+        try {
+            this.announcementManager.loadConfig();
+        } catch (Exception e) {
+            getLogger().log(Level.SEVERE, "Failed to reload configuration", e);
+        }
         restartTasks();
     }
 

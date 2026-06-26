@@ -8,6 +8,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.List;
 import java.util.Random;
+import java.util.logging.Level;
 
 public class IntervalTask extends BukkitRunnable {
 
@@ -23,23 +24,27 @@ public class IntervalTask extends BukkitRunnable {
 
     @Override
     public void run() {
-        List<Component> messages = manager.getIntervalMessages();
-        if (messages.isEmpty()) {
-            return;
-        }
-
-        Component message;
-        if (manager.isRandomOrder()) {
-            message = messages.get(random.nextInt(messages.size()));
-        } else {
-            if (currentIndex >= messages.size()) {
-                currentIndex = 0;
+        try {
+            List<Component> messages = manager.getIntervalMessages();
+            if (messages.isEmpty()) {
+                return;
             }
-            message = messages.get(currentIndex);
-            currentIndex++;
-        }
 
-        Component fullMessage = manager.getPrefix().append(message);
-        Bukkit.getServer().sendMessage(fullMessage);
+            Component message;
+            if (manager.isRandomOrder()) {
+                message = messages.get(random.nextInt(messages.size()));
+            } else {
+                if (currentIndex >= messages.size()) {
+                    currentIndex = 0;
+                }
+                message = messages.get(currentIndex);
+                currentIndex++;
+            }
+
+            Component fullMessage = manager.getPrefix().append(message);
+            Bukkit.getServer().sendMessage(fullMessage);
+        } catch (Exception e) {
+            plugin.getLogger().log(Level.SEVERE, "Error broadcasting interval message", e);
+        }
     }
 }
