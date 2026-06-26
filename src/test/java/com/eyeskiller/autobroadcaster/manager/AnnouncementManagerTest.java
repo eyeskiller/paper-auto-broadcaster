@@ -45,7 +45,7 @@ class AnnouncementManagerTest {
         when(config.getStringList("interval_messages.messages"))
                 .thenReturn(new ArrayList<>(Arrays.asList("<green>Hello</green>", "<red>World</red>")));
         when(config.getBoolean("scheduled_messages.enabled", true)).thenReturn(true);
-        when(config.contains("scheduled_messages.messages")).thenReturn(false);
+        when(config.isConfigurationSection("scheduled_messages.messages")).thenReturn(false);
     }
 
     @Test
@@ -97,7 +97,7 @@ class AnnouncementManagerTest {
     @Test
     void loadConfig_loadsScheduledMessages() {
         setupDefaultConfig();
-        when(config.contains("scheduled_messages.messages")).thenReturn(true);
+        when(config.isConfigurationSection("scheduled_messages.messages")).thenReturn(true);
         ConfigurationSection section = mock(ConfigurationSection.class);
         when(config.getConfigurationSection("scheduled_messages.messages")).thenReturn(section);
         when(section.getKeys(false)).thenReturn(new HashSet<>(Arrays.asList("12:00", "20:00")));
@@ -234,7 +234,7 @@ class AnnouncementManagerTest {
     @Test
     void removeScheduledMessage_existingKey_removesAndReturnsTrue() {
         setupDefaultConfig();
-        when(config.contains("scheduled_messages.messages")).thenReturn(true);
+        when(config.isConfigurationSection("scheduled_messages.messages")).thenReturn(true);
         ConfigurationSection section = mock(ConfigurationSection.class);
         when(config.getConfigurationSection("scheduled_messages.messages")).thenReturn(section);
         when(section.getKeys(false)).thenReturn(new HashSet<>(List.of("12:00")));
@@ -249,7 +249,7 @@ class AnnouncementManagerTest {
     @Test
     void removeScheduledMessage_existingKey_savesToConfig() {
         setupDefaultConfig();
-        when(config.contains("scheduled_messages.messages")).thenReturn(true);
+        when(config.isConfigurationSection("scheduled_messages.messages")).thenReturn(true);
         ConfigurationSection section = mock(ConfigurationSection.class);
         when(config.getConfigurationSection("scheduled_messages.messages")).thenReturn(section);
         when(section.getKeys(false)).thenReturn(new HashSet<>(List.of("12:00")));
@@ -279,7 +279,7 @@ class AnnouncementManagerTest {
         when(config.getBoolean("interval_messages.random_order", false)).thenReturn(true);
         when(config.getStringList("interval_messages.messages")).thenReturn(new ArrayList<>());
         when(config.getBoolean("scheduled_messages.enabled", true)).thenReturn(false);
-        when(config.contains("scheduled_messages.messages")).thenReturn(false);
+        when(config.isConfigurationSection("scheduled_messages.messages")).thenReturn(false);
 
         manager.loadConfig();
 
