@@ -34,13 +34,15 @@ public class AutoBroadcaster extends JavaPlugin {
 
         startTasks();
 
-        try {
-            AnalyticsTracker analytics = new AnalyticsTracker(this, "https://analytics.bechatbot.online/api/track");
-            analytics.sendEvent("STARTUP");
-        } catch (Exception e) {
-            getLogger().log(Level.WARNING, "Failed to send analytics event", e);
+        if (getConfig().getBoolean("analytics.enabled", true)) {
+            try {
+                String analyticsUrl = getConfig().getString("analytics.url", "https://analytics.bechatbot.online/api/track");
+                AnalyticsTracker analytics = new AnalyticsTracker(this, analyticsUrl);
+                analytics.sendEvent("STARTUP");
+            } catch (Exception e) {
+                getLogger().log(Level.WARNING, "Failed to send analytics event", e);
+            }
         }
-        
         getLogger().info("AutoBroadcaster enabled successfully!");
     }
 

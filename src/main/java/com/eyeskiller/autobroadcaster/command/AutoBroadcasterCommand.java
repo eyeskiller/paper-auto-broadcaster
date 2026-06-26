@@ -99,7 +99,9 @@ public class AutoBroadcasterCommand implements CommandExecutor, TabCompleter {
                         sender.sendMessage(Component.text("Index must be a number.", NamedTextColor.RED));
                     }
                 } else if (removeType.equalsIgnoreCase("time")) {
-                    if (manager.removeScheduledMessage(id)) {
+                    if (!id.matches("^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$")) {
+                        sender.sendMessage(Component.text("Invalid time format! Use HH:mm (e.g. 14:30).", NamedTextColor.RED));
+                    } else if (manager.removeScheduledMessage(id)) {
                         plugin.restartTasks();
                         sender.sendMessage(Component.text("Removed scheduled message for " + id + ".", NamedTextColor.GREEN));
                     } else {

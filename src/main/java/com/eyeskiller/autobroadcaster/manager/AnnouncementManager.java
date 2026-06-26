@@ -8,6 +8,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,7 +44,7 @@ public class AnnouncementManager {
         this.prefix = parseMessage(rawPrefix);
 
         this.intervalEnabled = config.getBoolean("interval_messages.enabled", true);
-        this.intervalSeconds = config.getInt("interval_messages.interval_seconds", 300);
+        this.intervalSeconds = Math.max(1, config.getInt("interval_messages.interval_seconds", 300));
         this.randomOrder = config.getBoolean("interval_messages.random_order", false);
         this.rawIntervalMessages = config.getStringList("interval_messages.messages");
 
@@ -59,7 +60,7 @@ public class AnnouncementManager {
 
         this.scheduledEnabled = config.getBoolean("scheduled_messages.enabled", true);
         this.scheduledMessages = new HashMap<>();
-        if (config.contains("scheduled_messages.messages")) {
+        if (config.isConfigurationSection("scheduled_messages.messages")) {
             ConfigurationSection section = config.getConfigurationSection("scheduled_messages.messages");
             if (section != null) {
                 for (String timeKey : section.getKeys(false)) {
@@ -153,11 +154,11 @@ public class AnnouncementManager {
     }
 
     public List<Component> getIntervalMessages() {
-        return intervalMessages;
+        return Collections.unmodifiableList(intervalMessages);
     }
 
     public List<String> getRawIntervalMessages() {
-        return rawIntervalMessages;
+        return Collections.unmodifiableList(rawIntervalMessages);
     }
 
     public boolean isScheduledEnabled() {
@@ -165,6 +166,6 @@ public class AnnouncementManager {
     }
 
     public Map<String, Component> getScheduledMessages() {
-        return scheduledMessages;
+        return Collections.unmodifiableMap(scheduledMessages);
     }
 }
