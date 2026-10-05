@@ -2,10 +2,8 @@ package com.eyeskiller.autobroadcaster.task;
 
 import com.eyeskiller.autobroadcaster.AutoBroadcaster;
 import com.eyeskiller.autobroadcaster.manager.AnnouncementManager;
-import net.kyori.adventure.text.Component;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.List;
 import java.util.Random;
 import java.util.logging.Level;
 
@@ -24,23 +22,24 @@ public class IntervalTask extends BukkitRunnable {
     @Override
     public void run() {
         try {
-            List<Component> messages = manager.getIntervalMessages();
-            if (messages.isEmpty()) {
+            int messageCount = manager.getIntervalMessages().size();
+            if (messageCount == 0) {
                 return;
             }
 
-            Component message;
+            int index;
             if (manager.isRandomOrder()) {
-                message = messages.get(random.nextInt(messages.size()));
+                index = random.nextInt(messageCount);
             } else {
-                if (currentIndex >= messages.size()) {
+                index = currentIndex;
+                if (currentIndex >= messageCount) {
                     currentIndex = 0;
+                    index = 0;
                 }
-                message = messages.get(currentIndex);
                 currentIndex++;
             }
 
-            manager.broadcastMessage(message);
+            manager.broadcastIntervalMessage(index);
         } catch (Exception e) {
             plugin.getLogger().log(Level.SEVERE, "Error broadcasting interval message", e);
         }

@@ -37,7 +37,7 @@ class IntervalTaskTest {
 
         task.run();
 
-        verify(manager, never()).broadcastMessage(any());
+        verify(manager, never()).broadcastIntervalMessage(anyInt());
     }
 
     @Test
@@ -49,7 +49,7 @@ class IntervalTaskTest {
 
         task.run();
 
-        verify(manager).broadcastMessage(msg1);
+        verify(manager).broadcastIntervalMessage(0);
     }
 
     @Test
@@ -62,8 +62,8 @@ class IntervalTaskTest {
         task.run();
         task.run();
 
-        verify(manager).broadcastMessage(msg1);
-        verify(manager).broadcastMessage(msg2);
+        verify(manager).broadcastIntervalMessage(0);
+        verify(manager).broadcastIntervalMessage(1);
     }
 
     @Test
@@ -75,7 +75,7 @@ class IntervalTaskTest {
         task.run();
         task.run();
 
-        verify(manager, times(2)).broadcastMessage(msg1);
+        verify(manager, times(2)).broadcastIntervalMessage(0);
     }
 
     @Test
@@ -87,7 +87,7 @@ class IntervalTaskTest {
 
         task.run();
 
-        verify(manager).broadcastMessage(any(Component.class));
+        verify(manager).broadcastIntervalMessage(anyInt());
     }
 
     @Test
@@ -98,6 +98,6 @@ class IntervalTaskTest {
 
         task.run();
 
-        verify(manager).broadcastMessage(msg);
+        verify(manager).broadcastIntervalMessage(0);
     }
 }

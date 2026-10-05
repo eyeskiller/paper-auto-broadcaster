@@ -30,12 +30,14 @@ public class AnnouncementManager {
     private int intervalSeconds;
     private boolean randomOrder;
     private List<Component> intervalMessages;
+    private List<Component> fullIntervalMessages;
     private List<String> rawIntervalMessages;
     private List<String> intervalWorlds;
     private String intervalPermission;
 
     private boolean scheduledEnabled;
     private Map<String, Component> scheduledMessages;
+    private Map<String, Component> fullScheduledMessages;
     private Map<String, List<String>> scheduledWorlds;
     private Map<String, String> scheduledPermissions;
 
@@ -59,17 +61,23 @@ public class AnnouncementManager {
         this.intervalPermission = config.getString("interval_messages.required_permission", "");
 
         this.intervalMessages = new ArrayList<>();
+        this.fullIntervalMessages = new ArrayList<>();
         for (String msg : this.rawIntervalMessages) {
             try {
-                this.intervalMessages.add(parseMessage(msg));
+                Component parsed = parseMessage(msg);
+                this.intervalMessages.add(parsed);
+                this.fullIntervalMessages.add(this.prefix.append(parsed));
             } catch (Exception e) {
                 plugin.getLogger().log(Level.WARNING, "Failed to parse interval message: " + msg, e);
-                this.intervalMessages.add(Component.text(msg));
+                Component fallback = Component.text(msg);
+                this.intervalMessages.add(fallback);
+                this.fullIntervalMessages.add(this.prefix.append(fallback));
             }
         }
 
         this.scheduledEnabled = config.getBoolean("scheduled_messages.enabled", true);
         this.scheduledMessages = new HashMap<>();
+        this.fullScheduledMessages = new HashMap<>();
         this.scheduledWorlds = new HashMap<>();
         this.scheduledPermissions = new HashMap<>();
 
@@ -80,10 +88,14 @@ public class AnnouncementManager {
                     String msg = config.getString("scheduled_messages.messages." + timeKey);
                     if (msg != null) {
                         try {
-                            this.scheduledMessages.put(timeKey, parseMessage(msg));
+                            Component parsed = parseMessage(msg);
+                            this.scheduledMessages.put(timeKey, parsed);
+                            this.fullScheduledMessages.put(timeKey, this.prefix.append(parsed));
                         } catch (Exception e) {
                             plugin.getLogger().log(Level.WARNING, "Failed to parse scheduled message for " + timeKey + ": " + msg, e);
-                            this.scheduledMessages.put(timeKey, Component.text(msg));
+                            Component fallback = Component.text(msg);
+                            this.scheduledMessages.put(timeKey, fallback);
+                            this.fullScheduledMessages.put(timeKey, this.prefix.append(fallback));
                         }
                     }
                 }
@@ -116,29 +128,45 @@ public class AnnouncementManager {
     }
 
     public void broadcast(Component message, List<String> targetWorlds, String requiredPermission) {
+        boolean hasWorldFilter = !targetWorlds.isEmpty();
+        boolean hasPermFilter = requiredPermission != null && !requiredPermission.isEmpty();
+
         for (Player player : plugin.getServer().getOnlinePlayers()) {
-            if (!targetWorlds.isEmpty()) {
-                World playerWorld = player.getWorld();
-                String worldName = playerWorld.getName();
-                boolean inTargetWorld = targetWorlds.stream()
-                        .anyMatch(w -> w.equalsIgnoreCase(worldName));
+            if (hasWorldFilter) {
+                String worldName = player.getWorld().getName();
+                boolean inTargetWorld = false;
+                for (String w : targetWorlds) {
+                    if (w.equalsIgnoreCase(worldName)) {
+                        inTargetWorld = true;
+                        break;
+                    }
+                }
                 if (!inTargetWorld) continue;
             }
-            if (requiredPermission != null && !requiredPermission.isEmpty()) {
-                if (!player.hasPermission(requiredPermission)) continue;
-            }
+            if (hasPermFilter && !player.hasPermission(requiredPermission)) continue;
             player.sendMessage(message);
         }
     }
 
+    public void broadcastIntervalMessage(int index) {
+        if (index >= 0 && index < fullIntervalMessages.size()) {
+            broadcast(fullIntervalMessages.get(index), intervalWorlds, intervalPermission);
+        }
+    }
+
+    public Component getFullScheduledMessage(String timeKey) {
+        return fullScheduledMessages.get(timeKey);
+    }
+
     public void broadcastMessage(Component message) {
-        Component fullMessage = prefix.append(message);
-        broadcast(fullMessage, intervalWorlds, intervalPermission);
+        broadcast(message, intervalWorlds, intervalPermission);
     }
 
     public void addIntervalMessage(String rawMessage) {
         this.rawIntervalMessages.add(rawMessage);
-        this.intervalMessages.add(parseMessage(rawMessage));
+        Component parsed = parseMessage(rawMessage);
+        this.intervalMessages.add(parsed);
+        this.fullIntervalMessages.add(this.prefix.append(parsed));
         saveConfigValue("interval_messages.messages", this.rawIntervalMessages);
     }
 
@@ -146,6 +174,7 @@ public class AnnouncementManager {
         if (index >= 0 && index < rawIntervalMessages.size()) {
             this.rawIntervalMessages.remove(index);
             this.intervalMessages.remove(index);
+            this.fullIntervalMessages.remove(index);
             saveConfigValue("interval_messages.messages", this.rawIntervalMessages);
             return true;
         }
@@ -153,13 +182,16 @@ public class AnnouncementManager {
     }
 
     public void addScheduledMessage(String time, String rawMessage) {
-        this.scheduledMessages.put(time, parseMessage(rawMessage));
+        Component parsed = parseMessage(rawMessage);
+        this.scheduledMessages.put(time, parsed);
+        this.fullScheduledMessages.put(time, this.prefix.append(parsed));
         saveConfigValue("scheduled_messages.messages." + time, rawMessage);
     }
 
     public boolean removeScheduledMessage(String time) {
         if (this.scheduledMessages.containsKey(time)) {
             this.scheduledMessages.remove(time);
+            this.fullScheduledMessages.remove(time);
             this.scheduledWorlds.remove(time);
             this.scheduledPermissions.remove(time);
             saveConfigValue("scheduled_messages.messages." + time, null);
