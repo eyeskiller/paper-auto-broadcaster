@@ -143,15 +143,24 @@ public class AutoBroadcasterCommand implements CommandExecutor, TabCompleter {
         if (!sender.hasPermission("autobroadcaster.admin")) return new ArrayList<>();
         
         List<String> completions = new ArrayList<>();
+        AnnouncementManager manager = plugin.getAnnouncementManager();
+        
         if (args.length == 1) {
             completions.addAll(Arrays.asList("reload", "list", "add", "remove"));
         } else if (args.length == 2) {
             if (args[0].equalsIgnoreCase("add") || args[0].equalsIgnoreCase("remove")) {
                 completions.addAll(Arrays.asList("interval", "time"));
             }
+        } else if (args.length == 3 && args[0].equalsIgnoreCase("remove")) {
+            if (args[1].equalsIgnoreCase("interval")) {
+                for (int i = 0; i < manager.getRawIntervalMessages().size(); i++) {
+                    completions.add(String.valueOf(i));
+                }
+            } else if (args[1].equalsIgnoreCase("time")) {
+                completions.addAll(manager.getScheduledMessages().keySet());
+            }
         }
         
-        // Filter by what they typed
         String current = args[args.length - 1].toLowerCase();
         completions.removeIf(s -> !s.toLowerCase().startsWith(current));
         

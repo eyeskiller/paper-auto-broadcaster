@@ -4,20 +4,31 @@
 prefix: "<gray>[<gradient:#ff0000:#ff7f00>AutoBroadcaster</gradient>] <reset>"
 
 # Messages that are broadcasted at a specific interval.
-# interval_seconds: How often in seconds the messages should be broadcasted.
+# interval_seconds: How often in seconds the messages should be broadcasted (minimum 10).
 # random_order: If true, picks a random message. If false, goes in order.
+# target_worlds: List of worlds to broadcast to. Leave empty for all worlds.
+# required_permission: If set, only players with this permission will see the message. Leave empty for everyone.
 interval_messages:
   enabled: true
   interval_seconds: 300
   random_order: false
+  target_worlds: []
+  required_permission: ""
   messages:
     - "<green>Welcome to our server!</green> Remember to read the rules."
     - "Join our discord at <aqua><click:open_url:'https://discord.gg/example'>discord.gg/example</click></aqua>"
 
 # Messages that are broadcasted at specific server times (HH:MM).
 # Make sure the time matches the server's time zone.
+# target_worlds and required_permissions are per-time-key maps.
 scheduled_messages:
   enabled: true
   messages:
     "12:00": "<gold>It is noon! Don't forget to grab your daily rewards!</gold>"
     "20:00": "<light_purple>Evening event is starting now!</light_purple>"
+  target_worlds:
+    "12:00": []
+    "20:00": []
+  required_permissions:
+    "12:00": ""
+    "20:00": ""

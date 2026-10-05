@@ -44,6 +44,8 @@ class AnnouncementManagerTest {
         when(config.getBoolean("interval_messages.random_order", false)).thenReturn(false);
         when(config.getStringList("interval_messages.messages"))
                 .thenReturn(new ArrayList<>(Arrays.asList("<green>Hello</green>", "<red>World</red>")));
+        when(config.getStringList("interval_messages.target_worlds")).thenReturn(new ArrayList<>());
+        when(config.getString("interval_messages.required_permission", "")).thenReturn("");
         when(config.getBoolean("scheduled_messages.enabled", true)).thenReturn(true);
         when(config.isConfigurationSection("scheduled_messages.messages")).thenReturn(false);
     }
@@ -103,6 +105,8 @@ class AnnouncementManagerTest {
         when(section.getKeys(false)).thenReturn(new HashSet<>(Arrays.asList("12:00", "20:00")));
         when(config.getString("scheduled_messages.messages.12:00")).thenReturn("<gold>Noon!</gold>");
         when(config.getString("scheduled_messages.messages.20:00")).thenReturn("<red>Evening!</red>");
+        when(config.getConfigurationSection("scheduled_messages.target_worlds")).thenReturn(null);
+        when(config.getConfigurationSection("scheduled_messages.required_permissions")).thenReturn(null);
 
         manager.loadConfig();
 
@@ -239,6 +243,8 @@ class AnnouncementManagerTest {
         when(config.getConfigurationSection("scheduled_messages.messages")).thenReturn(section);
         when(section.getKeys(false)).thenReturn(new HashSet<>(List.of("12:00")));
         when(config.getString("scheduled_messages.messages.12:00")).thenReturn("<gold>Noon!</gold>");
+        when(config.getConfigurationSection("scheduled_messages.target_worlds")).thenReturn(null);
+        when(config.getConfigurationSection("scheduled_messages.required_permissions")).thenReturn(null);
 
         manager.loadConfig();
 
@@ -254,12 +260,15 @@ class AnnouncementManagerTest {
         when(config.getConfigurationSection("scheduled_messages.messages")).thenReturn(section);
         when(section.getKeys(false)).thenReturn(new HashSet<>(List.of("12:00")));
         when(config.getString("scheduled_messages.messages.12:00")).thenReturn("<gold>Noon!</gold>");
+        when(config.getConfigurationSection("scheduled_messages.target_worlds")).thenReturn(null);
+        when(config.getConfigurationSection("scheduled_messages.required_permissions")).thenReturn(null);
 
         manager.loadConfig();
         manager.removeScheduledMessage("12:00");
 
         verify(config).set("scheduled_messages.messages.12:00", null);
-        verify(plugin).saveConfig();
+        verify(config, atLeastOnce()).set(anyString(), any());
+        verify(plugin, atLeastOnce()).saveConfig();
     }
 
     @Test
